@@ -1,4 +1,5 @@
-#include <iostream>
+#
+nclude <iostream>
 #include <vector>
 #include <algorithm>
 #include<queue>
@@ -20,7 +21,7 @@ class Heap{
 		if (i==0) {
 			return -1;
 		}else{
-			return div-1;
+			return div;
 		}
 	}
 	int getLeftChild(int i){

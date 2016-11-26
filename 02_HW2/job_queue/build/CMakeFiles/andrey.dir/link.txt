@@ -1,1 +1,0 @@
-/usr/bin/c++.exe  -g -pipe -O2 -std=c++11 -lm  -Wl,--enable-auto-import CMakeFiles/andrey.dir/priority_queue.cpp.o  -o andrey.exe -Wl,--out-implib,libandrey.dll.a -Wl,--major-image-version,0,--minor-image-version,0  

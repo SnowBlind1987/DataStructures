@@ -1,3 +1,0 @@
-/home/Andreyev/01_DS/02_Data_Structures/02_Assignment2/make_heap/build/CMakeFiles/edit_cache.dir
-/home/Andreyev/01_DS/02_Data_Structures/02_Assignment2/make_heap/build/CMakeFiles/rebuild_cache.dir
-/home/Andreyev/01_DS/02_Data_Structures/02_Assignment2/make_heap/build/CMakeFiles/heap.dir

@@ -1,1 +1,0 @@
-/usr/bin/c++.exe  -g -pipe -O2 -std=c++11 -lm  -Wl,--enable-auto-import CMakeFiles/check.dir/check_brackets.cpp.o  -o check.exe -Wl,--out-implib,libcheck.dll.a -Wl,--major-image-version,0,--minor-image-version,0  
