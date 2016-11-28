@@ -1,34 +1,91 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include<unordered_map>
 using std::string;
 using std::vector;
 using std::cin;
+using std::endl;
+using std::cout;
+using std::unordered_map;
 
 struct Query {
     string type, name;
     int number;
 };
 
-vector<Query> read_queries() {
-    int n;
-    cin >> n;
-    vector<Query> queries(n);
-    for (int i = 0; i < n; ++i) {
-        cin >> queries[i].type;
-        if (queries[i].type == "add")
-            cin >> queries[i].number >> queries[i].name;
-        else
-            cin >> queries[i].number;
-    }
-    return queries;
-}
+class PhoneBook{
+	private:
+	vector<Query> queries;
+	int  n_queries;
+	unordered_map<int,string> htable;	
 
+	void insertNumber(int number, string name){
+		auto it=htable.find(number);
+		if (it==htable.end()){
+			this->htable.insert(make_pair(number,name));
+		}else{
+			this->htable.erase(it);
+			this->htable.insert(make_pair(number,name));
+		}
+	}
+
+	void delNumber(int number){
+		auto it=htable.find(number);
+		if (it==htable.end()){
+			return;
+		}else{
+			htable.erase(it);
+		}
+	}
+
+	string findNumber(int number){
+		auto it=htable.find(number);
+		if (it==htable.end()){
+			string strOut="not found";
+			return strOut;
+		}else{
+			return it->second;
+		}
+	}
+	public:
+	void readQueries() {
+    	cin >> n_queries;
+    	queries.resize(n_queries);
+    	for (int i = 0; i < n_queries; ++i) {
+    	    cin >> queries[i].type;
+    	    if (queries[i].type == "add")
+    	        cin >> queries[i].number >> queries[i].name;
+    	    else
+    	        cin >> queries[i].number;
+    	}
+	}
+
+	void processQueries(){
+		for (int i=0;i<n_queries;i++){
+			if (queries[i].type=="add"){
+				this->insertNumber(queries[i].number,queries[i].name);
+			}
+			if(queries[i].type=="del"){
+				this->delNumber(queries[i].number);
+			}
+			if(queries[i].type=="find"){
+				string strOut=this->findNumber(queries[i].number);
+				cout<<strOut<<endl;
+			}
+		}
+	}
+};
+
+
+/*
 void write_responses(const vector<string>& result) {
     for (size_t i = 0; i < result.size(); ++i)
         std::cout << result[i] << "\n";
 }
+
+
+
 
 vector<string> process_queries(const vector<Query>& queries) {
     vector<string> result;
@@ -65,8 +122,10 @@ vector<string> process_queries(const vector<Query>& queries) {
         }
     return result;
 }
-
+*/
 int main() {
-    write_responses(process_queries(read_queries()));
+	PhoneBook pbook;
+	pbook.readQueries();
+	pbook.processQueries();
     return 0;
 }
