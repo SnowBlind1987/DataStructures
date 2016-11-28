@@ -97,8 +97,8 @@ class PriorityQueue{
     }
 
     pair<long,int> extractMin(){
-        pair<long,int> max=Hvect[0];
-        Hvect[0]=Hvect[this->size-1];
+	pair<long,int> max=Hvect[0];
+        swap(Hvect[0],Hvect[size-1]);
         this-size--;
         this->siftDown(0);
         return max;
