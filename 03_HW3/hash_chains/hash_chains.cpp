@@ -36,7 +36,14 @@ class LinkedList{
 
 		return searchString(pN->pNext,str);
 	}
-
+    void writeAll(node* pN){
+        if (pN->pNext==NULL){
+            return;
+        }else{
+            std::cout<<pn->myString<<std::endl;
+            writeAll(pN->pNext);
+        }
+    }
 	public:
 	LinkedList(){
 		cout<<"Inside the constructor\n"
@@ -71,7 +78,13 @@ class LinkedList{
 			oldPoint=NULL;
 		}
 	}
-	
+    void writeAll(){
+        if (myHead->pNext==NULL){
+            std::cout<<"\n";
+        }else{
+            writeAll(myHead->pNext);
+        }
+    }    
 
 };
 
