@@ -6,7 +6,8 @@
 using std::string;
 using std::vector;
 using std::cin;
-
+using std::cout;
+using std::endl;
 struct Query {
     string type, s;
     size_t ind;
@@ -31,22 +32,39 @@ class LinkedList{
 			return true;
 		}
 		if (pN->pNext==NULL){
-			return false
+			return false;
 		}
 
 		return searchString(pN->pNext,str);
 	}
+	void deleteString(node* pN,string const& str){
+		node* next=pN->pNext;
+        if (next==NULL){
+			return;
+		}else{
+			if (next->myString==str){
+				node* theOneAfter=next->pNext;
+				pN->pNext=theOneAfter;
+				delete next;
+				next = NULL;
+				theOneAfter=NULL;
+				return;
+			}else{
+				next==NULL;
+				deleteString(pN->pNext,str);
+			}
+		}
+	}
     void writeAll(node* pN){
-        if (pN->pNext==NULL){
-            return;
-        }else{
-            std::cout<<pn->myString<<std::endl;
-            writeAll(pN->pNext);
-        }
+        std::cout<<pN->myString<<std::endl;
+        if (pN->pNext!=NULL){
+			writeAll(pN->pNext);
+		}else{
+			return;
+		}
     }
 	public:
 	LinkedList(){
-		cout<<"Inside the constructor\n"
 		myHead=new HEAD;
 		myHead->pNext=NULL;
 	}
@@ -59,6 +77,7 @@ class LinkedList{
 		}
 		delete myHead;
 	}
+
 	bool searchString(string const & s){
 		if (myHead->pNext==NULL){
 			return false;
@@ -73,14 +92,33 @@ class LinkedList{
 		}else{
 			node* oldPoint=myHead->pNext;
 			myHead->pNext=new node;
-			myHead->pNext.myString=s;
+			myHead->pNext->myString=s;
 			myHead->pNext->pNext=oldPoint;
 			oldPoint=NULL;
 		}
 	}
+
+	void deleteString(string const & str){
+		if (myHead->pNext==NULL){
+			return;
+		}else if(myHead->pNext->myString==str){
+			node* currNode=myHead->pNext;
+			node* oneAfter=myHead->pNext->pNext;
+			myHead->pNext=oneAfter;
+			delete currNode;
+			currNode=NULL;
+			oneAfter==NULL;
+			cout<<"setting head's pointer to null\n";
+			return;
+		}else{
+			deleteString(myHead->pNext,str);
+		}
+	}
     void writeAll(){
         if (myHead->pNext==NULL){
+			cout<<"In here\n";
             std::cout<<"\n";
+			return;
         }else{
             writeAll(myHead->pNext);
         }
@@ -102,12 +140,9 @@ class QueryProcessor {
     }
 
 public:
-    QueryProcessor(int bucket_count){
-		this->bucket_count=bucket_count;
-		this->buckets.resize(bucket_count);
-		for (int i=0;i<bucket_count;i++){
-			buckets[i]
-		}
+    QueryProcessor(int bc){
+		this->bucket_count=bc;
+		this->buckets.resize(bc);
 	}
 
     Query readQuery() const {
@@ -119,7 +154,37 @@ public:
             cin >> query.ind;
         return query;
     }
-
+	
+	void processQuery(Query q){
+		if (q.type=="add"){
+			int hashVal=hash_func(q.s);
+			cout<<"hash is: "<<hashVal<<endl;
+			buckets[hashVal].insertString(q.s);
+		}
+		if (q.type=="del"){
+			int hashVal=hash_func(q.s);
+			buckets[hashVal].deleteString(q.s);
+		}
+		if (q.type=="find"){
+			int hashVal=hash_func(q.s);
+			if (buckets[hashVal].searchString(q.s)){
+				cout<<"yes\n";
+			}else{
+				cout<<"no\n";
+			}
+		}
+		if (q.type=="check"){
+			cout<<"checking: "<<q.ind<<endl;
+			buckets[q.ind].writeAll();
+		}
+	}
+	
+	void processQueries() {
+        int n;
+        cin >> n;
+        for (int i = 0; i < n; ++i)
+            processQuery(readQuery());
+    }
     
 };
 
