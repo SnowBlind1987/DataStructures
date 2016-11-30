@@ -56,10 +56,11 @@ class LinkedList{
 		}
 	}
     void writeAll(node* pN){
-        std::cout<<pN->myString<<std::endl;
+        std::cout<<pN->myString<<" ";
         if (pN->pNext!=NULL){
 			writeAll(pN->pNext);
 		}else{
+			cout<<endl;
 			return;
 		}
     }
@@ -108,7 +109,6 @@ class LinkedList{
 			delete currNode;
 			currNode=NULL;
 			oneAfter==NULL;
-			cout<<"setting head's pointer to null\n";
 			return;
 		}else{
 			deleteString(myHead->pNext,str);
@@ -116,7 +116,6 @@ class LinkedList{
 	}
     void writeAll(){
         if (myHead->pNext==NULL){
-			cout<<"In here\n";
             std::cout<<"\n";
 			return;
         }else{
@@ -135,8 +134,8 @@ class QueryProcessor {
         static const size_t prime = 1000000007;
         unsigned long long hash = 0;
         for (int i = static_cast<int> (s.size()) - 1; i >= 0; --i)
-            hash = ((hash * multiplier + s[i]) % prime) % bucket_count;
-        return hash;
+            hash = ((hash * multiplier + s[i]) % prime) ;
+        return hash%bucket_count;
     }
 
 public:
@@ -158,7 +157,6 @@ public:
 	void processQuery(Query q){
 		if (q.type=="add"){
 			int hashVal=hash_func(q.s);
-			cout<<"hash is: "<<hashVal<<endl;
 			buckets[hashVal].insertString(q.s);
 		}
 		if (q.type=="del"){
@@ -174,7 +172,6 @@ public:
 			}
 		}
 		if (q.type=="check"){
-			cout<<"checking: "<<q.ind<<endl;
 			buckets[q.ind].writeAll();
 		}
 	}
