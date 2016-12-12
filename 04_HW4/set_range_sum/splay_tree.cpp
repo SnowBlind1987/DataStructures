@@ -133,7 +133,8 @@ class SplayTree{
 		}		
 		splay(curNode);
 	}
-	Node* find(Node* curNode,int key({
+
+	Node* find(Node* curNode,int key){
 		if (curNode->key==key){
 			splay(curNode);
 			return root;
