@@ -54,7 +54,7 @@ class SplayTree{
 		tmp=curNode->left;
 		curNode->left=parent;
 		parent->parent=curNode;
-		parent->left=tmp;
+		parent->right=tmp;
 		tmp=NULL;
 		curNode->parent=grandParent;
 
@@ -76,7 +76,7 @@ class SplayTree{
 		Node* grandParent=parent->parent;
 		Node* tmp=NULL;
 		updateSum(curNode,"right");
-		tmp=curNode->right;
+		tmp=curNode->left;
 		curNode->right=parent;
 		parent->parent=curNode;
 		parent->right=tmp;
@@ -133,7 +133,6 @@ class SplayTree{
 		}		
 		splay(curNode);
 	}
-
 	Node* find(Node* curNode,int key){
 		if (curNode->key==key){
 			splay(curNode);
@@ -142,7 +141,6 @@ class SplayTree{
 		if (key<curNode->key){
 			if (curNode->left==NULL){
 				splay(curNode);
-				return root;
 			}else{
 				find(curNode->left,key);
 			}
@@ -150,46 +148,62 @@ class SplayTree{
 		if (key>curNode->key){
 			if (curNode->right==NULL){
 				splay(curNode);
-				return root;
 			}else{
 				find(curNode->right,key);
 			}
 		}
 	}
-
-	void split(int key,SplayTree& newTree){
+	Node* next(Node* curNode){
+		if (curNode->right!=NULL){
+			int key2find=curNode->key+1;
+			return this->find(curNode->right,key);
+		}
+	}
+	void split(int key,SplayTree*& newTree){
 		if (this->root->key>key){
+			newTree=new SplayTree;
 			Node* tmp=this->root->left;
 			this->root->left=NULL;
-			newTree.setRoot(tmp);
+			newTree->root=NULL;
 			tmp=NULL;
 		}
 		if (this->root->key<key){
+			newTree=new SplayTree;
 			Node* tmp=this->root->right;
 			this->root->right=NULL;
-			newTree.setRoot(tmp);
+			newTree->root=tmp;
 			tmp=NULL;
 		}
 	}
 
-	void merge(SplayTree & newTree){
+	void merge(SplayTree* & newTree){
+		int largest=2147483647;
+		Node* foundNode=NULL;
 		if (this->root->left==NULL){
+			foundNode=newTree->find(newTree->root,largest);
+			newTree->splay(foundNode);
 			this->root->left=newTree->root;
 			this->root->left->parent=this->root;
-		}else if{this->root->right==NULL){
-			this->root->right=newTree->root;
-			this->root->right->parent=this->root;
 			newTree->root=NULL;
+			delete newTree;
+		}else if(this->root->right==NULL){
+			foundNode=this->find(this->root,largest);
+			this->splay(foundNode);
+			this->root->parent=newTree->root;
+			newTree->root->right=this->root->parent;
+			newTree->root=NULL;
+			delete newTree;
 		}
 	}
 	void insert(Node* curNode,int key){
 		Node* foundNode=find(curNode,key);
 		if (foundNode->key==key){
 			return;//node already exist, do nothing
+			this->splay(foundNode);
 		}
-		SplayTree newTree;
+		SplayTree* newTree=NULL;
 		Node* tmp=NULL;
-		if (key<foundNode->key){
+		if (key<this->root->key){
 			this->split(key,newTree);
 			tmp=new Node;
 			tmp->parent=root;
