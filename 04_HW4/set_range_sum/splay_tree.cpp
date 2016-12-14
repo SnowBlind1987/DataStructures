@@ -146,28 +146,30 @@ class SplayTree{
 		}
 	}
 	//this* is always the left tree
-	void split(int key,SplayTree*& leftTree,SplayTree*& rightTree){
+	SplayTree* split(int key,SplayTree* leftTree){
 		Node* foudNode=find(leftTree->root,key);
 		splay(foundNode);
 		if (key<leftTree->root->key){
 			if (leftTree->root->left==NULL){
 				return;
 			}
-			righTree=new SplayTree;
+			SplayTree* rightTree=new SplayTree;
 			rightTree->root=foundNode;
 			leftTree->root=rightTree->root->left;
 			leftTree->root->parent=NULL;
 			rightTree->root->left==NULL;
 			update(rightTree->root);
+            return rightTree;
 		}else{
 			if (this->root->right==NULL){
 				return;
 			}
-			rightTree=new SplayTree;
+			SplayTree* rightTree=new SplayTree;
 			rightTree->root=leftTree->root->right;
 			rightTree->root->prant=NULL;
 			leftTree->root->right=NULL;
 			update(leftTree->root);
+            return rightTree;
 		}
 	}
 
@@ -202,7 +204,7 @@ class SplayTree{
 			return;	
 		}
 		SplayTree* rightTree=NULL;
-		split(key,this,rightTree);
+		rightTree=split(key,this);
 		
 		if (rightTree==NULL){
 			if (this->root->right==NULL and this->root->key!=key){
@@ -246,13 +248,20 @@ class SplayTree{
 			return false;
 		}
 	}
+    SplayTree* split(int key){
+        return split(key,this);
+    }
+
+    void merge(splayTree* mergeTree){
+        merge(this,mergeTree);
+    }
 	int range_sum(int l, int r){
 		SplayTree* rightTree=NULL;
-		split(r,this,righTree);
-		splayTree* middleTree=NULL;
-		split(l,this,middleTree);
+		rightTree=split(r,this);
+		SplayTree* middleTree=NULL;
+		middleTree=split(l,this);
 		int sum= middleTree->root->sum;
-		if (this->root==l){
+		if (this->root->key==l){
 			sum+=this->root->key;//if the key that is equal got cut away
 		}
 		merge(middleTree,rightTree);
