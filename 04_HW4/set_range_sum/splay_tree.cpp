@@ -23,76 +23,48 @@ class SplayTree{
 		this->root=curNode;
 		this->root->parent=NULL;
 	}
-	void updateSum(Node* curNode, string dir){
-		if (dir=="right"){
-			curNode->sum=curNode->parent->sum;
-			if (curNode->left!=NULL){
-				curNode->parent->sum=curNode->sum-(curNode->key+curNode->left->sum);
-			}else{
-				curNode->parent->sum=curNode->sum-curNode->key;
-			}
-			return;
 
-		}else if(dir=="left"){
-			curNode->sum=curNode->parent->sum;
-			if (curNode->right!=NULL){
-				curNode->parent->sum=curNode->sum-(curNode->key+curNode->right->sum);
-			}else{
-				curNode->parent->sum=curNode->sum-curNode->key;
-			}
+	void update(Node* curNode){
+		if (curNode==NULL){
 			return;
-		}else{
-			cout<<"Wrong string value\n";
-			return;			
 		}
-	}
-	void rotateLeft(Node* curNode){
+		curNode->sum = curNode->key + (curNode->left != NULL ?
+					 	curNode->left->sum : 0ll) + (curNode->right != NULL ? 
+						curNode->right->sum : 0ll);
+		if (curNode->left!=NULL){
+			curNode->left->parent=curNode;
+		}
+		if (curNode->right!=NULL){
+			curNode->right->parent=curNode;
+		}
+	}	
+	void rotate(Node* curNode){
 		Node* parent=curNode->parent;
+		if (parent==NULL) {return};
 		Node* grandParent=parent->parent;
 		Node* tmp=NULL;
-		updateSum(curNode,"left");
-		tmp=curNode->left;
-		curNode->left=parent;
-		parent->parent=curNode;
-		parent->right=tmp;
-		tmp=NULL;
+		//Right rotation case
+		if (parent->right==curNode){
+			tmp=curNode->left;
+			curNode->left=parent;
+			parent->right=tmp;
+			tmp==NULL;
+		}else{
+			tmp=curNode->right;
+			curNode->right=parent;
+			parent->left=tmp;
+			tmp=NULL;
+		}
+		update(parent);
+		update(curNode);
 		curNode->parent=grandParent;
-
 		if (grandParent!=NULL){
-			if (grandParent->left==parent){
-				grandParent->left=curNode;
-			}else if(grandParent->right==parent){
+			if (grandParent->right==parent){
 				grandParent->right=curNode;
 			}else{
-				cout<<"Broken Tree! GTFO\n";
-				
+				grandParent->left=curNode;
 			}
 		}	
-		return;
-	}
-
-	void rotateRight(Node* curNode){
-		Node* parent=curNode->parent;
-		Node* grandParent=parent->parent;
-		Node* tmp=NULL;
-		updateSum(curNode,"right");
-		tmp=curNode->left;
-		curNode->right=parent;
-		parent->parent=curNode;
-		parent->right=tmp;
-		tmp=NULL;
-		curNode->parent=grandParent;
-
-		if (grandParent!=NULL){
-			if (grandParent->left==parent){
-				grandParent->left=curNode;
-			}else if(grandParent->right==parent){
-				grandParent->right=parent;
-			}else{
-				cout<<"Broken Tree! GTFO\n";
-			}
-		}
-		return;	
 	}
 
 	void splay(Node* curNode){
@@ -104,134 +76,113 @@ class SplayTree{
 		Node* grandParent=parent->parent;
 		//zig case
 		if (grandParent==NULL){
-			if (parent->left==curNode){
-				rotateRight(curNode);
-			}
-			if (parent->right==curNode){
-				rotateLeft(curNode);
-			}
+			rotate(curNode);
 		}
 		//zig zig case
 		//if curNode is parent's left child,
 		//the parent has to be Grandparent's left child
 		//Vise verse with right child case 
 		if (grandParent->left==parent and parent->left==curNode){
-			rotateRight(curNode->parent);
-			rotateRight(curNode);
+			rotate(curNode->parent);
+			rotate(curNode);
 		}else if(grandParent->right ==parent and parent->right==curNode){
-			rotateLeft(curNode->parent);
-			rotateLeft(curNode);
+			rotate(curNode->parent);
+			rotate(curNode);
 		}
 
 		//zig zag case
 	 	if (grandParent->left==parent and parent->right==curNode){
-			rotateRight(curNode);
-			rotateLeft(curNode);
+			rotate(curNode);
+			rotate(curNode);
 		}else if(grandParent->right==parent and parent->left==curNode){
-			rotateLeft(curNode);
-			rotateRight(curNode);
+			rotate(curNode);
+			rotate(curNode);
 		}		
 		splay(curNode);
 	}
+
 	Node* find(Node* curNode,int key){
 		if (curNode->key==key){
-			splay(curNode);
-			return root;
+			return curNode;
 		}
 		if (key<curNode->key){
 			if (curNode->left==NULL){
-				splay(curNode);
+				return curNode;
 			}else{
 				find(curNode->left,key);
 			}
 		}
 		if (key>curNode->key){
 			if (curNode->right==NULL){
-				splay(curNode);
+				return curNode;
 			}else{
 				find(curNode->right,key);
 			}
 		}
 	}
-	Node* next(Node* curNode){
-		if (curNode->right!=NULL){
-			int key2find=curNode->key+1;
-			return this->find(curNode->right,key);
+
+	Node* leftDesc(Node* curNode){
+		if (curNode->left==NULL){
+			return curNode;
+		}else{
+			leftDesc(curNode->left);
 		}
 	}
-	void split(int key,SplayTree*& newTree){
-		if (this->root->key>key){
-			newTree=new SplayTree;
-			Node* tmp=this->root->left;
-			this->root->left=NULL;
-			newTree->root=NULL;
-			tmp=NULL;
+	Node* rightAnc(Node* curNode){
+		if (curNode==this->root){
+			return NULL;//if you're here this is the largest node, no next
 		}
-		if (this->root->key<key){
-			newTree=new SplayTree;
-			Node* tmp=this->root->right;
-			this->root->right=NULL;
-			newTree->root=tmp;
-			tmp=NULL;
+		if (curNode->key<curNode->parent->key){
+			return curNode;
+		}else{
+			rightAnc(curNode->parent);
+		}
+	}
+	Node* next(Node* curNode){
+		if (curNode->right!=NULL){
+			return leftDesc(curNode->right);
+		}else{
+			return rightAnc(curNode);
+		}
+	}
+	//this* is always the left tree
+	void split(int key,SplayTree*& leftTree,SplayTree*& rightTree){
+		Node* foudNode=find(leftTree->root,key);
+		splay(foundNode);
+		if (key<leftTree->root->key){
+			if (leftTree->root->left==NULL){
+				return;
+			}
+			righTree=new SplayTree;
+			rightTree->root=foundNode;
+			leftTree->root=rightTree->root->left;
+			leftTree->root->parent=NULL;
+			rightTree->root->left==NULL;
+			update(rightTree->root);
+		}else{
+			if (this->root->right==NULL){
+				return;
+			}
+			rightTree=new SplayTree;
+			rightTree->root=leftTree->root->right;
+			rightTree->root->prant=NULL;
+			leftTree->root->right=NULL;
+			update(leftTree->root);
 		}
 	}
 
-	void merge(SplayTree* & newTree){
+	void merge(SplayTree*& leftTree, SplayTree* & rightTree){
 		int largest=2147483647;
 		Node* foundNode=NULL;
-		if (this->root->left==NULL){
-			foundNode=newTree->find(newTree->root,largest);
-			newTree->splay(foundNode);
-			this->root->left=newTree->root;
-			this->root->left->parent=this->root;
-			newTree->root=NULL;
-			delete newTree;
-		}else if(this->root->right==NULL){
-			foundNode=this->find(this->root,largest);
-			this->splay(foundNode);
-			this->root->parent=newTree->root;
-			newTree->root->right=this->root->parent;
-			newTree->root=NULL;
-			delete newTree;
-		}
+		foundNode=leftTree->find(leftTree->root,largest);
+		leftTree->splay(foundNode);
+		leftTree->root->right=rightTree->root;
+		update(left->root);
+		right->root=NULL;
+		delete rightTree;
+		rightTree=NULL;
 	}
-	void insert(Node* curNode,int key){
-		Node* foundNode=find(curNode,key);
-		if (foundNode->key==key){
-			return;//node already exist, do nothing
-			this->splay(foundNode);
-		}
-		SplayTree* newTree=NULL;
-		Node* tmp=NULL;
-		if (key<this->root->key){
-			this->split(key,newTree);
-			tmp=new Node;
-			tmp->parent=root;
-			tmp->left=NULL;
-			tmp->right=NULL;
-			tmp->key=key;
-			tmp->sum=key;
-			root->left=tmp;
-			root->sum+=key;
-			tmp=NULL:
-			splay(root->left);
-			merge(newTree);
-		}
-		if (key>foundNode->key){
-			this->split(key,newTree)
-			tmp=newNode;
-			tmp->parent=root;
-			tmp->left=NULL;
-			tmp->right=NULL;
-			tmp->key=key;
-			tmp->sum=sum;
-			root->right=tmp;
-			root->sum+=key;
-			tmp=NULL;
-			this->splay(root->right);
-			merge(NewTree);
-		}
-	}
+	
 	public:
 	SplayTree(){
 		root=NULL;
@@ -241,12 +192,52 @@ class SplayTree{
 		root->parent=NULL;
 	}
 	void insert(int key){
-		if (root==NULL){
-			root=new Node;
-			root->key=key;
-			root->sum=key;
+		Node* newNode=NULL;
+		if (this->root==NULL){
+			newNode=new Node;
+			newNode->key=key;
+			newNode->sum=key;
+			this->setRoot(newNode);
+			newNode=NULL;
+			return;	
 		}
+		SplayTree* rightTree=NULL;
+		split(key,newTree);
+		
+		if (newTree==NULL){
+			if (this->root->right==NULL and this->root->key!=key){
+				newNode=new Node;
+				newNode->key=key;
+				newNode->sum=key;
+				this->root->right=newNode;
+				update(this->root);
+			}else if(this->root->left==NULL and this->root->key!=key){
+				newNode=new Node;
+				newNode->key=key;
+				newNode->sum=key;
+				this->root->left=newNode;
+				update(this->root);
+			}
+			return;
+		}
+		if (this->root->right==NULL and this->root->key!=key){
+			newNode=new Node;
+			newNode->key=key;
+			newNode->sum=key;
+			this->root->right=newNode;
+			update(this->root);
+			merge(this,newTree);
+		}else if(newTree->root->left==NULL and newTree->root->key!=key){
+			newNode=new Node;
+			newNode->key=key;
+			newNode->sum=key;
+			newTree->root->left=newNode;
+			update(newTree->root);
+			merge(this,newTree);
+		}
+				
 	}
+	
 	bool find(int key){
 		Node* foundNode=find(root,key);
 		if (foundNode->key==key){
@@ -254,6 +245,19 @@ class SplayTree{
 		}else{
 			return false;
 		}
+	}
+	int range_sum(int l, int r){
+		SplayTree* rightTree=NULL;
+		split(r,this,righTree);
+		splayTree* middleTree=NULL;
+		split(l,this,middleTree);
+		int sum= middleTree->root->sum;
+		if (this->root==l){
+			sum+=this->root->key;//if the key that is equal got cut away
+		}
+		merge(middleTree,rightTree);
+		merge(this,middleTree);
+		return sum;
 	}
 
 };
