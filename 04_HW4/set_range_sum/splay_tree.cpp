@@ -202,9 +202,9 @@ class SplayTree{
 			return;	
 		}
 		SplayTree* rightTree=NULL;
-		split(key,newTree);
+		split(key,this,rightTree);
 		
-		if (newTree==NULL){
+		if (rightTree==NULL){
 			if (this->root->right==NULL and this->root->key!=key){
 				newNode=new Node;
 				newNode->key=key;
@@ -226,14 +226,14 @@ class SplayTree{
 			newNode->sum=key;
 			this->root->right=newNode;
 			update(this->root);
-			merge(this,newTree);
-		}else if(newTree->root->left==NULL and newTree->root->key!=key){
+			merge(this,rightTree);
+		}else if(rightTree->root->left==NULL and rightTree->root->key!=key){
 			newNode=new Node;
 			newNode->key=key;
 			newNode->sum=key;
-			newTree->root->left=newNode;
-			update(newTree->root);
-			merge(this,newTree);
+			rightTree->root->left=newNode;
+			update(rightTree->root);
+			merge(this,rightTree);
 		}
 				
 	}
