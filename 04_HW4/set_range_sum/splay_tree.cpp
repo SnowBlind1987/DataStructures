@@ -113,14 +113,14 @@ class SplayTree{
 				cout<<"here: "<<curNode->key<<endl;
 				return curNode;
 			}else{
-				find(curNode->left,key);
+				return find(curNode->left,key);
 			}
 		}
 		if (key>curNode->key){
 			if (curNode->right==NULL){
 				return curNode;
 			}else{
-				find(curNode->right,key);
+				return find(curNode->right,key);
 			}
 		}
 	}
