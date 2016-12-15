@@ -150,6 +150,7 @@ class SplayTree{
 	SplayTree* split(int key,SplayTree* leftTree){
 		Node* foundNode=find(leftTree->root,key);
 		splay(foundNode);
+		cout<<"found node: "<<this->root->key<<endl;
 		if (key<leftTree->root->key){
 			if (leftTree->root->left==NULL){
 				return NULL;
@@ -160,7 +161,7 @@ class SplayTree{
 			rightTree->root->left==NULL;
 			update(rightTree->root);
             return rightTree;
-		}else{
+		}else if(key>leftTree->root->key){
 			if (this->root->right==NULL){
 				return NULL;
 			}
@@ -169,6 +170,9 @@ class SplayTree{
 			leftTree->root->right=NULL;
 			update(leftTree->root);
             return rightTree;
+		}
+		else{
+			return NULL;
 		}
 	}
 
@@ -283,7 +287,7 @@ int main(){
 	test->insert(2);
 	cout<<"Insert: "<<1<<endl;
 	test->insert(1);
-
+	test->insert(3);
 	Node* root=test->getRoot();
 	cout<<root->key<<endl;
 	cout<<root->left->key<<endl;
