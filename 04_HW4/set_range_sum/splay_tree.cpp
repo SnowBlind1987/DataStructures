@@ -150,7 +150,6 @@ class SplayTree{
 	SplayTree* split(int key,SplayTree* leftTree){
 		Node* foundNode=find(leftTree->root,key);
 		splay(foundNode);
-		cout<<"found node: "<<this->root->key<<endl;
 		if (key<leftTree->root->key){
 			if (leftTree->root->left==NULL){
 				return NULL;
@@ -161,7 +160,7 @@ class SplayTree{
 			rightTree->root->left==NULL;
 			update(rightTree->root);
             return rightTree;
-		}else if(key>leftTree->root->key){
+		}else if(key>=leftTree->root->key){
 			if (this->root->right==NULL){
 				return NULL;
 			}
@@ -170,9 +169,6 @@ class SplayTree{
 			leftTree->root->right=NULL;
 			update(leftTree->root);
             return rightTree;
-		}
-		else{
-			return NULL;
 		}
 	}
 
@@ -227,21 +223,23 @@ class SplayTree{
 			}
 			return;
 		}
-		if (this->root->right==NULL and this->root->key!=key){
-			//cout<<"why am I in here?"<<endl
-			newNode=new Node;
-			newNode->key=key;
-			newNode->sum=key;
-			this->root->right=newNode;
-			update(this->root);
+		if (this->root->right==NULL){
+			if (this->root->key!=key){
+				newNode=new Node;
+				newNode->key=key;
+				newNode->sum=key;
+				this->root->right=newNode;
+				update(this->root);
+			}
 			merge(this,rightTree);
-		}else if(rightTree->root->left==NULL and rightTree->root->key!=key){
-			//cout<<"shouldn't be here either"<<endl;
-			newNode=new Node;
-			newNode->key=key;
-			newNode->sum=key;
-			rightTree->root->left=newNode;
-			update(rightTree->root);
+		}else if(rightTree->root->left==NULL){
+			if (rightTree->root->key!=key){
+				newNode=new Node;
+				newNode->key=key;
+				newNode->sum=key;
+				rightTree->root->left=newNode;
+				update(rightTree->root);
+			}
 			merge(this,rightTree);
 		}
 				
@@ -281,18 +279,14 @@ class SplayTree{
 
 int main(){
 	SplayTree* test=new SplayTree;
-	cout<<"Insert: "<<3<<endl;
-	test->insert(3);
-	cout<<"Insert: "<<2<<endl;
-	test->insert(2);
-	cout<<"Insert: "<<1<<endl;
-	test->insert(1);
-	test->insert(3);
+	for (int i=50;i>1;i-=3){
+		cout<<"Inserting: "<<i<<endl;
+		test->insert(i);
+	}
 	Node* root=test->getRoot();
 	cout<<root->key<<endl;
 	cout<<root->left->key<<endl;
 	cout<<root->right->key<<endl;
 	cout<<root->sum<<endl;
-	
 return 0;
 }
