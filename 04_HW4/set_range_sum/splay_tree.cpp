@@ -102,12 +102,15 @@ class SplayTree{
 		splay(curNode);
 	}
 
-	Node* find(Node* curNode,int key){
+	Node* find(Node * curNode,int key){
+		cout<<"Looking for key: "<<key<<endl;
+		cout<<"Current: "<<curNode->key<<endl;
 		if (curNode->key==key){
 			return curNode;
 		}
 		if (key<curNode->key){
 			if (curNode->left==NULL){
+				cout<<"here: "<<curNode->key<<endl;
 				return curNode;
 			}else{
 				find(curNode->left,key);
@@ -148,10 +151,18 @@ class SplayTree{
 	}
 	//this* is always the left tree
 	SplayTree* split(int key,SplayTree* leftTree){
-		Node* foundNode=find(leftTree->root,key);
+		Node* foundNode=NULL;
+		cout<<"The root is: "<<this->root->key<<endl;
+		if (this->root->parent==NULL){
+			cout<<"corrent\n";
+		}
+		foundNode=find(leftTree->root,key);
+		if (foundNode==NULL) cout<<"dafuq\n";
 		splay(foundNode);
+		
 		if (key<leftTree->root->key){
 			if (leftTree->root->left==NULL){
+				cout<<"Inserting left below root\n";
 				return NULL;
 			}
 			SplayTree* rightTree=new SplayTree;
@@ -208,19 +219,21 @@ class SplayTree{
 		SplayTree* rightTree=NULL;
 		rightTree=split(key,this);
 		if (rightTree==NULL){
-			if (this->root->right==NULL and this->root->key!=key){
+			if (this->root->right==NULL and this->root->key<key){
+				if (this->root->key==key) return;
 				newNode=new Node;
 				newNode->key=key;
 				newNode->sum=key;
 				this->root->right=newNode;
 				update(this->root);
-			}else if(this->root->left==NULL and this->root->key!=key){
+			}else if(this->root->left==NULL and this->root->key>key){
+				if (this->root->key==key) return;
 				newNode=new Node;
 				newNode->key=key;
 				newNode->sum=key;
 				this->root->left=newNode;
 				update(this->root);
-			}
+							}
 			return;
 		}
 		if (this->root->right==NULL){
@@ -279,14 +292,17 @@ class SplayTree{
 
 int main(){
 	SplayTree* test=new SplayTree;
-	for (int i=50;i>1;i-=3){
+	for (int i=10;i>1;i-=3){
 		cout<<"Inserting: "<<i<<endl;
 		test->insert(i);
 	}
+/*	test->insert(3);
+	test->insert(2);
+	test->insert(1);*/
 	Node* root=test->getRoot();
 	cout<<root->key<<endl;
 	cout<<root->left->key<<endl;
 	cout<<root->right->key<<endl;
-	cout<<root->sum<<endl;
+//	cout<<root->sum<<endl;
 return 0;
 }
