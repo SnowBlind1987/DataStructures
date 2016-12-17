@@ -1,5 +1,7 @@
 #include<iostream>
+#include<stack>
 
+using std::stack;
 using std::cout;
 using std::endl;
 struct Node{
@@ -103,14 +105,11 @@ class SplayTree{
 	}
 
 	Node* find(Node * curNode,int key){
-		cout<<"Looking for key: "<<key<<endl;
-		cout<<"Current: "<<curNode->key<<endl;
 		if (curNode->key==key){
 			return curNode;
 		}
 		if (key<curNode->key){
 			if (curNode->left==NULL){
-				cout<<"here: "<<curNode->key<<endl;
 				return curNode;
 			}else{
 				return find(curNode->left,key);
@@ -149,12 +148,11 @@ class SplayTree{
 			return rightAnc(curNode);
 		}
 	}
+
 	//this* is always the left tree
 	SplayTree* split(int key,SplayTree* leftTree){
 		Node* foundNode=NULL;
-		cout<<"The root is: "<<this->root->key<<endl;
 		if (this->root->parent==NULL){
-			cout<<"corrent\n";
 		}
 		foundNode=find(leftTree->root,key);
 		if (foundNode==NULL) cout<<"dafuq\n";
@@ -162,7 +160,6 @@ class SplayTree{
 		
 		if (key<leftTree->root->key){
 			if (leftTree->root->left==NULL){
-				cout<<"Inserting left below root\n";
 				return NULL;
 			}
 			SplayTree* rightTree=new SplayTree;
@@ -184,6 +181,9 @@ class SplayTree{
 	}
 
 	void merge(SplayTree* leftTree, SplayTree* rightTree){
+		if (rightTree==NULL){
+			return;
+		}
 		int largest=2147483647;
 		Node* foundNode=NULL;
 		foundNode=leftTree->find(leftTree->root,largest);
@@ -194,6 +194,30 @@ class SplayTree{
 		delete rightTree;
 		rightTree=NULL;
 	}
+
+	void del(Node* curNode,int key){
+		if (curNode->parent==NULL){
+			delete this->root;
+			root=NULL;
+			return;
+		}
+		Node* foundNode=find(this->root,key);
+		Node* nextNode=next(foundNode);
+		if (nextNode!=NULL){
+			splay(nextNode);
+			splay(curNode);
+			nextNode->left=this->root;
+			this->setRoot(nextNode);
+			update(this->root->left);
+			delete foundNode;
+			foundNode=NULL;	
+			nextNode=NULL;
+		}else{
+			this->setRoot(this->root->left);
+			delete foundNode;
+			foundNode=NULL;
+		}
+	}
 	
 	public:
 	SplayTree(){
@@ -202,6 +226,40 @@ class SplayTree{
 	SplayTree(Node* curNode){
 		root=curNode;
 		root->parent=NULL;
+	}
+
+	~SplayTree(){
+		if (this->root==NULL) return;
+		stack<Node*> needDel;
+		needDel.push(this->root);
+		Node* curNode=this->root;
+		while(not needDel.empty()){
+			Node* curLeft=curNode->left;
+			Node* curRight=curNode->right;
+			if (curLeft!=NULL){
+				if (curLeft->right==NULL and curLeft->left==NULL){
+					cout<<"Deleting: "<<curLeft->key<<endl;
+					delete curLeft;
+					curLeft=NULL;
+					needDel.pop();
+				}else{
+					cout<<"Pushing: "<<curLeft->key<<endl;
+					needDel.push(curLeft);
+				}
+			}
+			if (curRight!=NULL){
+				if (curRight->right==NULL and curRight->left==NULL){
+					cout<<"Deleting: "<<curRight->key<<endl;
+					delete curRight;
+					curRight=NULL;
+					needDel.pop();
+				}else{
+					cout<<"Pusing: "<<curRight->key<<endl;
+					needDel.push(curRight);
+				}	
+			}
+			curNode=needDel.top();
+		}
 	}
 	Node* getRoot(){
 		return root;
@@ -264,6 +322,7 @@ class SplayTree{
 			cout<<"Fuck yeah\n";
 			return true;
 		}else{
+			cout<<"Fuck no\n";
 			return false;
 		}
 	}
@@ -274,11 +333,18 @@ class SplayTree{
     void merge(SplayTree* mergeTree){
         merge(this,mergeTree);
     }
+
+	void del(int key){
+		this->del(this->root,key);
+	}
 	int range_sum(int l, int r){
 		SplayTree* rightTree=NULL;
 		rightTree=split(r,this);
 		SplayTree* middleTree=NULL;
 		middleTree=split(l,this);
+		if (middleTree==NULL){
+			return this->root->sum;
+		}
 		int sum= middleTree->root->sum;
 		if (this->root->key==l){
 			sum+=this->root->key;//if the key that is equal got cut away
@@ -292,17 +358,16 @@ class SplayTree{
 
 int main(){
 	SplayTree* test=new SplayTree;
-	for (int i=10;i>1;i-=3){
-		cout<<"Inserting: "<<i<<endl;
-		test->insert(i);
-	}
-/*	test->insert(3);
+	test->insert(1);
+	test->insert(10);
+	test->insert(15);
 	test->insert(2);
-	test->insert(1);*/
+	test->insert(3);
 	Node* root=test->getRoot();
 	cout<<root->key<<endl;
 	cout<<root->left->key<<endl;
 	cout<<root->right->key<<endl;
-//	cout<<root->sum<<endl;
+	cout<<test->range_sum(2,15)<<endl;
+	delete test;
 return 0;
 }
