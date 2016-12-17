@@ -6,7 +6,7 @@ using std::stack;
 using std::cout;
 using std::endl;
 struct Node{
-	Node(): parent(NULL),left(NULL),right(NULL),key(0),sum(0){}
+	Node(): parent(NULL),left(NULL),right(NULL),key(-1),sum(-1){}
 
 	Node* parent;
 	Node* left;
@@ -108,7 +108,7 @@ class SplayTree{
 		splay(curNode);
 	}
 
-	Node* find(Node * curNode,int key){
+	Node* find(Node* curNode,int key){
         if (curNode==NULL) return NULL;
 		if (curNode->key==key){
 			return curNode;
@@ -163,27 +163,28 @@ class SplayTree{
 		Node* foundNode=NULL;
 
 		foundNode=find(leftTree->root,key);
-		if (foundNode==NULL) cout<<"dafuq\n";
+		if (foundNode==NULL) return NULL;
 		splay(foundNode);
-		
 		if (key<leftTree->root->key){
-			if (leftTree->root->left==NULL){
+			if (leftTree->root->left==NULL or leftTree->root->right==NULL){
 				return NULL;
 			}
 			SplayTree* rightTree=new SplayTree;
 			rightTree->root=foundNode;
 			leftTree->setRoot(rightTree->root->left);
 			rightTree->root->left==NULL;
+            update(leftTree->root);
 			update(rightTree->root);
             return rightTree;
 		}else if(key>=leftTree->root->key){
-			if (this->root->right==NULL){
+			if (leftTree->root->left==NULL or leftTree->root->right==NULL){
 				return NULL;
 			}
 			SplayTree* rightTree=new SplayTree;
 			rightTree->setRoot(leftTree->root->right);
 			leftTree->root->right=NULL;
-			update(leftTree->root);
+            update(rightTree->root);
+            update(leftTree->root);
             return rightTree;
 		}
 	}
@@ -235,8 +236,10 @@ class SplayTree{
 			foundNode=NULL;	
 			nextNode=NULL;
 		}else {
-			this->setRoot(this->root->left);
-			delete foundNode;
+            this->splay(foundNode);
+            this->setRoot(foundNode->left);
+            this->update(this->root);
+            delete foundNode;
 			foundNode=NULL;
 		}
 	}
@@ -284,7 +287,7 @@ class SplayTree{
 				newNode->sum=key;
 				this->root->left=newNode;
 				update(this->root);
-							}
+			}
 			return;
 		}
 		if (this->root->right==NULL){
@@ -333,9 +336,12 @@ class SplayTree{
 		this->del(this->root,key);
 	}
 	long long range_sum(int l, int r){
+        if (this->root==NULL) return 0;
 		SplayTree* rightTree=NULL;
 		rightTree=split(r,this);
 		SplayTree* middleTree=NULL;
+        if (rightTree==NULL){
+        }
 		middleTree=split(l,this);
 		if (middleTree==NULL){
 			return this->root->sum;
@@ -384,6 +390,23 @@ int main(){
           long long res = tree->range_sum((l + last_sum_result) % MODULO, (r + last_sum_result) % MODULO);
           printf("%lld\n", res);
           last_sum_result = int(res % MODULO);
+        }break;
+        case 'r' :{
+            Node* root=tree->getRoot();
+            int key=root->key;
+            Node* left=root->left;
+            Node* right=root->right;
+            printf("%lld\n",key);
+            if (left!=NULL){
+                printf("%lld\n",tree->getRoot()->left->key);
+            }else{
+                cout<<"NULL\n";
+            }
+            if (right!=NULL){
+                printf("%lld\n",tree->getRoot()->right->key);
+            }else{
+                cout<<"NULL\n";
+            }
         }
       }
     }
