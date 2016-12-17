@@ -1,3 +1,4 @@
+#include <cstdio>
 #include<iostream>
 #include<stack>
 
@@ -40,6 +41,8 @@ class SplayTree{
 		}
 	}	
 	void rotate(Node* curNode){
+        if (curNode==NULL) return;
+
 		Node* parent=curNode->parent;
 		if (parent==NULL) {return;}
 		Node* grandParent=parent->parent;
@@ -69,6 +72,7 @@ class SplayTree{
 	}
 
 	void splay(Node* curNode){
+        if (curNode==NULL) return;
 		Node* parent=curNode->parent;
 		if (parent==NULL) {
 			root=curNode;
@@ -105,6 +109,7 @@ class SplayTree{
 	}
 
 	Node* find(Node * curNode,int key){
+        if (curNode==NULL) return NULL;
 		if (curNode->key==key){
 			return curNode;
 		}
@@ -125,6 +130,8 @@ class SplayTree{
 	}
 
 	Node* leftDesc(Node* curNode){
+        if (curNode==NULL) return NULL;
+
 		if (curNode->left==NULL){
 			return curNode;
 		}else{
@@ -132,6 +139,7 @@ class SplayTree{
 		}
 	}
 	Node* rightAnc(Node* curNode){
+        if (curNode==NULL) return NULL;
 		if (curNode==this->root){
 			return NULL;//if you're here this is the largest node, no next
 		}
@@ -142,6 +150,7 @@ class SplayTree{
 		}
 	}
 	Node* next(Node* curNode){
+        if (curNode==NULL) return NULL;
 		if (curNode->right!=NULL){
 			return leftDesc(curNode->right);
 		}else{
@@ -152,8 +161,7 @@ class SplayTree{
 	//this* is always the left tree
 	SplayTree* split(int key,SplayTree* leftTree){
 		Node* foundNode=NULL;
-		if (this->root->parent==NULL){
-		}
+
 		foundNode=find(leftTree->root,key);
 		if (foundNode==NULL) cout<<"dafuq\n";
 		splay(foundNode);
@@ -194,25 +202,39 @@ class SplayTree{
 		delete rightTree;
 		rightTree=NULL;
 	}
-
+    bool isRoot(Node* curNode){
+        if (this->root==curNode){
+            return true;
+        }else{
+            return false;
+        }
+    }
 	void del(Node* curNode,int key){
-		if (curNode->parent==NULL){
-			delete this->root;
-			root=NULL;
-			return;
-		}
+	    if (curNode==NULL) return;	
 		Node* foundNode=find(this->root,key);
+        if (foundNode->key!=key) return;
+        //if the tree consists of only root
+        if (isRoot(foundNode)){
+            Node* leftNode=this->root->left;
+            Node* rightNode=this->root->right;
+            if (leftNode==NULL and rightNode==NULL){
+                delete this->root;
+                this->root=NULL;
+                return;
+            }
+		}
 		Node* nextNode=next(foundNode);
 		if (nextNode!=NULL){
 			splay(nextNode);
-			splay(curNode);
-			nextNode->left=this->root;
-			this->setRoot(nextNode);
-			update(this->root->left);
-			delete foundNode;
+			splay(foundNode);
+            this->setRoot(nextNode);
+            this->root->left=foundNode->left;
+            update(this->root->left);
+            update(this->root);
+            delete foundNode;
 			foundNode=NULL;	
 			nextNode=NULL;
-		}else{
+		}else {
 			this->setRoot(this->root->left);
 			delete foundNode;
 			foundNode=NULL;
@@ -230,40 +252,11 @@ class SplayTree{
 
 	~SplayTree(){
 		if (this->root==NULL) return;
-		stack<Node*> needDel;
-		needDel.push(this->root);
-		Node* curNode=this->root;
-		while(not needDel.empty()){
-			Node* curLeft=curNode->left;
-			Node* curRight=curNode->right;
-			if (curLeft!=NULL){
-				if (curLeft->right==NULL and curLeft->left==NULL){
-					cout<<"Deleting: "<<curLeft->key<<endl;
-					delete curLeft;
-					curLeft=NULL;
-					needDel.pop();
-				}else{
-					cout<<"Pushing: "<<curLeft->key<<endl;
-					needDel.push(curLeft);
-				}
-			}
-			if (curRight!=NULL){
-				if (curRight->right==NULL and curRight->left==NULL){
-					cout<<"Deleting: "<<curRight->key<<endl;
-					delete curRight;
-					curRight=NULL;
-					needDel.pop();
-				}else{
-					cout<<"Pusing: "<<curRight->key<<endl;
-					needDel.push(curRight);
-				}	
-			}
-			curNode=needDel.top();
-		}
 	}
-	Node* getRoot(){
-		return root;
-	}
+
+    Node* getRoot(){
+        return this->root;
+    }
 	void insert(int key){
 		Node* newNode=NULL;
 		if (this->root==NULL){
@@ -318,11 +311,13 @@ class SplayTree{
 	
 	bool find(int key){
 		Node* foundNode=find(root,key);
+        splay(foundNode);
+        if (foundNode==NULL){
+            return false;
+        }
 		if (foundNode->key==key){
-			cout<<"Fuck yeah\n";
 			return true;
 		}else{
-			cout<<"Fuck no\n";
 			return false;
 		}
 	}
@@ -337,7 +332,7 @@ class SplayTree{
 	void del(int key){
 		this->del(this->root,key);
 	}
-	int range_sum(int l, int r){
+	long long range_sum(int l, int r){
 		SplayTree* rightTree=NULL;
 		rightTree=split(r,this);
 		SplayTree* middleTree=NULL;
@@ -357,17 +352,40 @@ class SplayTree{
 };
 
 int main(){
-	SplayTree* test=new SplayTree;
-	test->insert(1);
-	test->insert(10);
-	test->insert(15);
-	test->insert(2);
-	test->insert(3);
-	Node* root=test->getRoot();
-	cout<<root->key<<endl;
-	cout<<root->left->key<<endl;
-	cout<<root->right->key<<endl;
-	cout<<test->range_sum(2,15)<<endl;
-	delete test;
-return 0;
+    const int MODULO = 1000000001;
+    SplayTree* tree=NULL;
+    tree=new SplayTree;
+    int n;
+    scanf("%d", &n);
+    int last_sum_result = 0;
+    for (int i = 0; i < n; i++) {
+      char buffer[10];
+      scanf("%s", buffer);
+      char type = buffer[0];
+      switch (type) {
+        case '+' : {
+          int x;
+          scanf("%d", &x);
+          tree->insert((x + last_sum_result) % MODULO);
+        } break;
+        case '-' : {
+          int x;
+          scanf("%d", &x);
+          tree->del((x + last_sum_result) % MODULO);
+        } break;            
+        case '?' : {
+          int x;
+          scanf("%d", &x);
+          printf(tree->find((x + last_sum_result) % MODULO) ? "Found\n" : "Not found\n");
+        } break;
+        case 's' : {
+          int l, r;
+          scanf("%d %d", &l, &r);
+          long long res = tree->range_sum((l + last_sum_result) % MODULO, (r + last_sum_result) % MODULO);
+          printf("%lld\n", res);
+          last_sum_result = int(res % MODULO);
+        }
+      }
+    }
+    return 0;
 }
