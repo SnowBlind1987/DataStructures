@@ -345,8 +345,10 @@ class SplayTree{
 		middleTree=split(l,this);
 		if (middleTree==NULL){
 			if (l>this->root->key){
+				this->merge(this,rightTree);
 				return 0;
 			}else{ 
+				this->merge(this,rightTree);
 				return this->root->sum;
 			}
 		}
