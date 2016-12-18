@@ -135,7 +135,7 @@ class SplayTree{
 		if (curNode->left==NULL){
 			return curNode;
 		}else{
-			leftDesc(curNode->left);
+			return leftDesc(curNode->left);
 		}
 	}
 	Node* rightAnc(Node* curNode){
@@ -146,7 +146,7 @@ class SplayTree{
 		if (curNode->key<curNode->parent->key){
 			return curNode->parent;
 		}else{
-			rightAnc(curNode->parent);
+			return rightAnc(curNode->parent);
 		}
 	}
 	Node* next(Node* curNode){
@@ -340,8 +340,6 @@ class SplayTree{
 		SplayTree* rightTree=NULL;
 		rightTree=split(r,this);
 		SplayTree* middleTree=NULL;
-        if (rightTree==NULL){
-        }
 		middleTree=split(l,this);
 		if (middleTree==NULL){
 			if (l>this->root->key){
@@ -378,23 +376,30 @@ int main(){
         case '+' : {
           int x;
           scanf("%d", &x);
-          tree->insert((x + last_sum_result) % MODULO);
+		  int xx=(x + last_sum_result) % MODULO;
+		  cout<<"Inserting: "<<xx<<endl;
+          tree->insert(xx);
         } break;
         case '-' : {
           int x;
           scanf("%d", &x);
-          tree->del((x + last_sum_result) % MODULO);
+		  int xx=(x + last_sum_result) % MODULO;
+		  cout<<"Deleting: "<<xx<<endl;
+          tree->del(xx);
         } break;            
         case '?' : {
           int x;
           scanf("%d", &x);
-          printf(tree->find((x + last_sum_result) % MODULO) ? "Found\n" : "Not found\n");
+		  int xx=(x + last_sum_result) % MODULO;
+		  cout<<"Searching for: "<<xx<<endl;
+          printf(tree->find(xx) ? "Found\n" : "Not found\n");
         } break;
         case 's' : {
           int l, r;
           scanf("%d %d", &l, &r);
 		  long long ll=(l + last_sum_result) % MODULO;
 		  long long rr=(r + last_sum_result) % MODULO;
+		  cout<<"Summing: "<<ll<<"and "<<rr<<endl;
           long long res = tree->range_sum(ll,rr) ;
           printf("%lld\n", res);
           last_sum_result = int(res % MODULO);
