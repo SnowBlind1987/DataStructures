@@ -144,7 +144,7 @@ class SplayTree{
 			return NULL;//if you're here this is the largest node, no next
 		}
 		if (curNode->key<curNode->parent->key){
-			return curNode;
+			return curNode->parent;
 		}else{
 			rightAnc(curNode->parent);
 		}
@@ -344,7 +344,11 @@ class SplayTree{
         }
 		middleTree=split(l,this);
 		if (middleTree==NULL){
-			return this->root->sum;
+			if (l>this->root->key){
+				return 0;
+			}else{ 
+				return this->root->sum;
+			}
 		}
 		int sum= middleTree->root->sum;
 		if (this->root->key==l){
@@ -377,7 +381,6 @@ int main(){
         case '-' : {
           int x;
           scanf("%d", &x);
-		  cout<<"Deleting: "<<(x+last_sum_result)%MODULO<<endl;
           tree->del((x + last_sum_result) % MODULO);
         } break;            
         case '?' : {
@@ -388,7 +391,9 @@ int main(){
         case 's' : {
           int l, r;
           scanf("%d %d", &l, &r);
-          long long res = tree->range_sum((l + last_sum_result) % MODULO, (r + last_sum_result) % MODULO);
+		  long long ll=(l + last_sum_result) % MODULO;
+		  long long rr=(r + last_sum_result) % MODULO;
+          long long res = tree->range_sum(ll,rr) ;
           printf("%lld\n", res);
           last_sum_result = int(res % MODULO);
         }break;
@@ -400,7 +405,6 @@ int main(){
             printf("%lld\n",key);
             if (left!=NULL){
                 printf("%lld\n",tree->getRoot()->left->key);
-				printf("%lld\n",root->left->left->key);
 
             }else{
                 cout<<"NULL\n";
