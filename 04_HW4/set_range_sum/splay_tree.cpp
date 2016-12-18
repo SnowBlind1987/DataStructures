@@ -377,6 +377,7 @@ int main(){
         case '-' : {
           int x;
           scanf("%d", &x);
+		  cout<<"Deleting: "<<(x+last_sum_result)%MODULO<<endl;
           tree->del((x + last_sum_result) % MODULO);
         } break;            
         case '?' : {
@@ -399,6 +400,8 @@ int main(){
             printf("%lld\n",key);
             if (left!=NULL){
                 printf("%lld\n",tree->getRoot()->left->key);
+				printf("%lld\n",root->left->left->key);
+
             }else{
                 cout<<"NULL\n";
             }
