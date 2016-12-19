@@ -402,8 +402,8 @@ int main(){
         case 's' : {
           int l, r;
           scanf("%d %d", &l, &r);
-		  long long ll=(l + last_sum_result) % MODULO;
-		  long long rr=(r + last_sum_result) % MODULO;
+		  int ll=(l + last_sum_result) % MODULO;
+		  int rr=(r + last_sum_result) % MODULO;
 //		  cout<<"Summing: "<<ll<<"and "<<rr<<endl;
           long long res = tree->range_sum(ll,rr) ;
           printf("%lld\n", res);
