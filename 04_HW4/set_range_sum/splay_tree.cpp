@@ -166,18 +166,18 @@ class SplayTree{
 		if (foundNode==NULL) return NULL;
 		splay(foundNode);
 		if (key<leftTree->root->key){
-			if (leftTree->root->left==NULL or leftTree->root->right==NULL){
+			if (leftTree->root->left==NULL){
 				return NULL;
 			}
 			SplayTree* rightTree=new SplayTree;
 			rightTree->root=foundNode;
 			leftTree->setRoot(rightTree->root->left);
-			rightTree->root->left==NULL;
+			rightTree->root->left=NULL;
             update(leftTree->root);
 			update(rightTree->root);
             return rightTree;
 		}else if(key>=leftTree->root->key){
-			if (leftTree->root->left==NULL or leftTree->root->right==NULL){
+			if (leftTree->root->right==NULL){
 				return NULL;
 			}
 			SplayTree* rightTree=new SplayTree;
@@ -346,11 +346,12 @@ class SplayTree{
 				this->merge(this,rightTree);
 				return 0;
 			}else{ 
+				long long sum =this->root->sum;
 				this->merge(this,rightTree);
-				return this->root->sum;
+				return sum;
 			}
 		}
-		int sum= middleTree->root->sum;
+		long long sum= middleTree->root->sum;
 		if (this->root->key==l){
 			sum+=this->root->key;//if the key that is equal got cut away
 		}
