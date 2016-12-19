@@ -213,6 +213,7 @@ class SplayTree{
 	void del(Node* curNode,int key){
 	    if (curNode==NULL) return;	
 		Node* foundNode=find(this->root,key);
+		splay(foundNode);
         if (foundNode->key!=key) return;
         //if the tree consists of only root
         if (isRoot(foundNode)){
