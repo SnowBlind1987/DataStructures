@@ -256,6 +256,31 @@ class SplayTree{
 
 	~SplayTree(){
 		if (this->root==NULL) return;
+		stack<Node*> need2del;
+		need2del.push(this->root);
+		Node* curNode;
+		curNode=NULL;
+		while(not need2del.empty()){
+			curNode=need2del.top();
+
+			if (curNode->right==NULL and curNode->left==NULL){
+				need2del.pop();
+				if (curNode->parent!=NULL){
+					curNode->parent->right=NULL;
+					curNode->parent->left=NULL;
+				} 
+			    delete curNode;
+				curNode=NULL;	
+			}
+			if (need2del.empty()) continue;
+
+			if (curNode->left!=NULL){
+				need2del.push(curNode->left);
+			}
+			if (curNode->right!=NULL){
+				need2del.push(curNode->right);
+			}
+		}
 	}
 
     Node* getRoot(){
@@ -433,5 +458,7 @@ int main(){
         }
       }
     }
+	delete tree;
+	tree=NULL;
     return 0;
 }
