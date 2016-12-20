@@ -272,7 +272,9 @@ class SplayTree{
 						curNode->parent->left=NULL;
 					}
 				} 
+                //cout<<"Deleting: "<<curNode->key<<endl;
 			    delete curNode;
+                curNode=NULL;
 				if (not need2del.empty()){
 					curNode=need2del.top();	
 				}
