@@ -349,6 +349,10 @@ class SplayTree{
 			if (l>this->root->key){
 				this->merge(this,rightTree);
 				return 0;
+			}else if(l==this->root->key){
+				long long sum=this->root->key;
+				this->merge(this,rightTree);
+				return sum;
 			}else{ 
 				long long sum =this->root->sum;
 				this->merge(this,rightTree);
