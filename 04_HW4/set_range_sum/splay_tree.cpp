@@ -266,11 +266,16 @@ class SplayTree{
 			if (curNode->right==NULL and curNode->left==NULL){
 				need2del.pop();
 				if (curNode->parent!=NULL){
-					curNode->parent->right=NULL;
-					curNode->parent->left=NULL;
+					if (curNode==curNode->parent->right){
+						curNode->parent->right=NULL;
+					}else{
+						curNode->parent->left=NULL;
+					}
 				} 
 			    delete curNode;
-				curNode=NULL;	
+				if (not need2del.empty()){
+					curNode=need2del.top();	
+				}
 			}
 			if (need2del.empty()) continue;
 
@@ -281,6 +286,7 @@ class SplayTree{
 				need2del.push(curNode->right);
 			}
 		}
+
 	}
 
     Node* getRoot(){
